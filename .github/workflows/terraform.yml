@@ -20,7 +20,7 @@ jobs:
       - name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v2'
         with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}' # Make sure to set this secret in your repository
+          credentials_json: '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}' # Make sure to set this secret in your repository
 
       - name: 'Set up Terraform'
         uses: hashicorp/setup-terraform@v3
