@@ -59,17 +59,17 @@ if [ "$NEED_DATA" = "true" ]; then
         # Get row count
         ROW_COUNT=$(gcloud alpha bq query --project="$PROJECT_ID" --use_legacy_sql=false --format="value(f0_)" "SELECT COUNT(*) FROM \`$PROJECT_ID.test_dataset.titanic\`")
         echo "📊 Table contains $ROW_COUNT rows"
-    else
-        echo "❌ Cloud Function may have failed. Falling back to direct BigQuery load..."
-        gcloud alpha bq load \
-            --project="$PROJECT_ID" \
-            --source_format=CSV \
-            --skip_leading_rows=1 \
-            --autodetect \
-            "test_dataset.titanic" \
-            "gs://$BUCKET_NAME/titanic.csv"
-        echo "✅ Data loaded directly to BigQuery as fallback"
-    fi
+    # else
+    #     echo "❌ Cloud Function may have failed. Falling back to direct BigQuery load..."
+    #     gcloud alpha bq load \
+    #         --project="$PROJECT_ID" \
+    #         --source_format=CSV \
+    #         --skip_leading_rows=1 \
+    #         --autodetect \
+    #         "test_dataset.titanic" \
+    #         "gs://$BUCKET_NAME/titanic.csv"
+    #     echo "✅ Data loaded directly to BigQuery as fallback"
+    # fi
     
     # Clean up local file
     rm -f titanic.csv

@@ -9,8 +9,8 @@
 
 ```
 Service Accounts:
-✅ github-actions-terraform@agentic-data-science-460701.iam.gserviceaccount.com
-✅ cloud-function-bigquery@agentic-data-science-460701.iam.gserviceaccount.com
+✅ github-actions-terraform@{project-id}.iam.gserviceaccount.com
+✅ cloud-function-bigquery@{project-id}.iam.gserviceaccount.com
 
 Cloud Function:
 ✅ titanic-data-loader (Updated with managed service account)
