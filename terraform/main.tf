@@ -14,3 +14,13 @@ resource "google_bigquery_dataset" "test_dataset" {
     project     = var.project_id
   }
 }
+
+# create a cloud storage bucket for temporary data
+resource "google_storage_bucket" "temp_bucket" {
+  name     = "${var.project_id}-temp-bucket"
+  location = var.region
+  labels = {
+    environment = var.environment
+    project     = var.project_id
+  }
+}
