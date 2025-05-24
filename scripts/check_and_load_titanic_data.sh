@@ -15,20 +15,18 @@ fi
 echo "Checking BigQuery dataset and Titanic data for project: $PROJECT_ID"
 
 # Check if dataset exists
-if ! gcloud alpha bq datasets describe "test_dataset" --project="$PROJECT_ID" >/dev/null 2>&1; then
+if ! bq show --project_id="$PROJECT_ID" "test_dataset" >/dev/null 2>&1; then
     echo "Dataset 'test_dataset' does not exist. Creating dataset and loading Titanic data..."
     
     # Create dataset
-    gcloud alpha bq datasets create "test_dataset" \
-        --project="$PROJECT_ID" \
-        --description="Test dataset for Titanic data"
+    bq mk --project_id="$PROJECT_ID" --description="Test dataset for Titanic data" "test_dataset"
     
     NEED_DATA=true
 else
     echo "Dataset 'test_dataset' exists. Checking for 'titanic' table..."
     
     # Check if table exists
-    if ! gcloud alpha bq tables describe "test_dataset.titanic" --project="$PROJECT_ID" >/dev/null 2>&1; then
+    if ! bq show --project_id="$PROJECT_ID" "test_dataset.titanic" >/dev/null 2>&1; then
         echo "Table 'titanic' does not exist in dataset 'test_dataset'."
         NEED_DATA=true
     else
