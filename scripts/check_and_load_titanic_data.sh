@@ -42,32 +42,41 @@ if [ "$NEED_DATA" = "true" ]; then
     echo "Downloading Titanic dataset..."
     curl -o titanic.csv "https://raw.githubusercontent.com/datasciencedojo/datasets/refs/heads/master/titanic.csv"
     
-    # Create temporary bucket (with timestamp to ensure uniqueness)
-    TIMESTAMP=$(date +%s)
-    BUCKET_NAME="temp-titanic-data-${TIMESTAMP}"
+    # Use the existing temp bucket created by Terraform
+    BUCKET_NAME="${PROJECT_ID}-temp-bucket"
     
-    echo "Creating temporary bucket: gs://$BUCKET_NAME"
-    gsutil mb gs://$BUCKET_NAME
-    
-    echo "Uploading Titanic dataset to temporary bucket..."
+    echo "Uploading Titanic dataset to temp bucket: gs://$BUCKET_NAME"
+    echo "This will trigger the Cloud Function to automatically load data to BigQuery..."
     gsutil cp titanic.csv gs://$BUCKET_NAME/
     
-    echo "Loading data from bucket to BigQuery..."
-    gcloud alpha bq load \
-        --project="$PROJECT_ID" \
-        --source_format=CSV \
-        --skip_leading_rows=1 \
-        --autodetect \
-        "test_dataset.titanic" \
-        "gs://$BUCKET_NAME/titanic.csv"
+    # Wait a moment for the Cloud Function to process
+    echo "Waiting for Cloud Function to process the file..."
+    sleep 30
     
-    echo "Cleaning up temporary bucket..."
-    gsutil rm -r gs://$BUCKET_NAME
+    # Check if the table was created by the Cloud Function
+    echo "Verifying that data was loaded by Cloud Function..."
+    if gcloud alpha bq tables describe "test_dataset.titanic" --project="$PROJECT_ID" >/dev/null 2>&1; then
+        echo "✅ Cloud Function successfully loaded data to BigQuery table 'test_dataset.titanic'"
+        
+        # Get row count
+        ROW_COUNT=$(gcloud alpha bq query --project="$PROJECT_ID" --use_legacy_sql=false --format="value(f0_)" "SELECT COUNT(*) FROM \`$PROJECT_ID.test_dataset.titanic\`")
+        echo "📊 Table contains $ROW_COUNT rows"
+    else
+        echo "❌ Cloud Function may have failed. Falling back to direct BigQuery load..."
+        gcloud alpha bq load \
+            --project="$PROJECT_ID" \
+            --source_format=CSV \
+            --skip_leading_rows=1 \
+            --autodetect \
+            "test_dataset.titanic" \
+            "gs://$BUCKET_NAME/titanic.csv"
+        echo "✅ Data loaded directly to BigQuery as fallback"
+    fi
     
     # Clean up local file
     rm -f titanic.csv
     
-    echo "Titanic data successfully loaded to BigQuery table 'test_dataset.titanic'"
+    echo "Titanic data successfully available in BigQuery table 'test_dataset.titanic'"
 else
     echo "Titanic data already exists in BigQuery. No action needed."
 fi
