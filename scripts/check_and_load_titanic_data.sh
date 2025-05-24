@@ -53,23 +53,51 @@ if [ "$NEED_DATA" = "true" ]; then
     
     # Check if the table was created by the Cloud Function
     echo "Verifying that data was loaded by Cloud Function..."
+    
+    # First, wait and check logs for function execution
+    echo "Checking Cloud Function execution logs..."
+    UPLOAD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    sleep 5  # Brief wait before checking logs
+    
+    # Check for recent function execution
+    FUNCTION_LOGS=$(gcloud logging read "resource.type=cloud_function AND resource.labels.function_name=titanic-data-loader AND timestamp>=\"$(date -u -d '2 minutes ago' +%Y-%m-%dT%H:%M:%SZ)\"" --project="$PROJECT_ID" --limit=5 --format="value(textPayload)" 2>/dev/null || echo "")
+    
+    if [ -n "$FUNCTION_LOGS" ]; then
+        echo "📋 Recent Cloud Function activity detected:"
+        echo "$FUNCTION_LOGS" | head -3
+    else
+        echo "⚠️  No recent Cloud Function logs found"
+    fi
+    
+    # Wait for function to complete processing
+    echo "Waiting for Cloud Function processing to complete..."
+    sleep 25
+    
+    # Check if BigQuery table was created
     if gcloud alpha bq tables describe "test_dataset.titanic" --project="$PROJECT_ID" >/dev/null 2>&1; then
         echo "✅ Cloud Function successfully loaded data to BigQuery table 'test_dataset.titanic'"
         
         # Get row count
         ROW_COUNT=$(gcloud alpha bq query --project="$PROJECT_ID" --use_legacy_sql=false --format="value(f0_)" "SELECT COUNT(*) FROM \`$PROJECT_ID.test_dataset.titanic\`")
         echo "📊 Table contains $ROW_COUNT rows"
-    # else
-    #     echo "❌ Cloud Function may have failed. Falling back to direct BigQuery load..."
-    #     gcloud alpha bq load \
-    #         --project="$PROJECT_ID" \
-    #         --source_format=CSV \
-    #         --skip_leading_rows=1 \
-    #         --autodetect \
-    #         "test_dataset.titanic" \
-    #         "gs://$BUCKET_NAME/titanic.csv"
-    #     echo "✅ Data loaded directly to BigQuery as fallback"
-    # fi
+        
+        # Verify data quality
+        if [ "$ROW_COUNT" -gt 800 ]; then
+            echo "✅ Data loading successful - expected row count achieved"
+        else
+            echo "⚠️  Warning: Row count ($ROW_COUNT) seems low for Titanic dataset"
+        fi
+    else
+        echo "❌ Cloud Function may have failed. Falling back to direct BigQuery load..."
+        gcloud alpha bq load \
+            --project="$PROJECT_ID" \
+            --source_format=CSV \
+            --skip_leading_rows=1 \
+            --autodetect \
+            "test_dataset.titanic" \
+            "gs://$BUCKET_NAME/titanic.csv"
+        echo "✅ Data loaded directly to BigQuery as fallback"
+    fi
     
     # Clean up local file
     rm -f titanic.csv
