@@ -1,0 +1,73 @@
+name: 'Terraform CI/CD with IAM as Code'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    env:
+      TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+      TF_VAR_region: ${{ secrets.GCP_REGION }}
+      TF_VAR_environment: ${{ secrets.GCP_ENVIRONMENT }}
+
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}'
+
+      - name: 'Set up Google Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: 'Set up Terraform'
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+
+      - name: 'Terraform Init'
+        id: init
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.GCP_PROJECT_ID }}-terraform-state"
+        working-directory: ./terraform
+
+      - name: 'Terraform Validate'
+        id: validate
+        run: terraform validate -no-color
+        working-directory: ./terraform
+
+      - name: 'Terraform Plan'
+        id: plan
+        run: terraform plan -no-color -input=false -out=tfplan
+        working-directory: ./terraform
+        if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+
+      - name: 'Terraform Apply'
+        id: apply
+        run: terraform apply -auto-approve -input=false tfplan
+        working-directory: ./terraform
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+      - name: 'Output Service Account Information'
+        id: output_sa
+        run: |
+          echo "GitHub Actions Service Account: $(terraform output -raw github_actions_service_account_email)"
+          echo "Cloud Function Service Account: $(terraform output -raw cloud_function_service_account_email)"
+        working-directory: ./terraform
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+      - name: 'Check BigQuery Dataset and Load Titanic Data'
+        id: bigquery_check
+        run: |
+          chmod +x ../scripts/check_and_load_titanic_data.sh
+          ../scripts/check_and_load_titanic_data.sh ${{ secrets.GCP_PROJECT_ID }}
+        working-directory: ./terraform
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
