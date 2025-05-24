@@ -1,7 +1,7 @@
 # Cloud Function for automatic BigQuery data loading
 resource "google_cloudfunctions_function" "titanic_data_loader" {
   name                  = "titanic-data-loader"
-  region                = var.region
+  location              = var.region
   description           = "Automatically loads titanic.csv files to BigQuery when uploaded to temp bucket"
   runtime               = "python311"
   available_memory_mb   = 256

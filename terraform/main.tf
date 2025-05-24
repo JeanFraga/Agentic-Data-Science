@@ -4,6 +4,28 @@ provider "google" {
   region  = var.region
 }
 
+# Enable required APIs first
+resource "google_project_service" "required_apis" {
+  for_each = toset([
+    "bigquery.googleapis.com",
+    "storage.googleapis.com", 
+    "cloudfunctions.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "eventarc.googleapis.com",
+    "run.googleapis.com",
+    "pubsub.googleapis.com",
+    "iam.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "serviceusage.googleapis.com"
+  ])
+  
+  project = var.project_id
+  service = each.value
+  
+  disable_dependent_services = false
+  disable_on_destroy         = false
+}
+
 # Cloud Storage bucket for Terraform state
 resource "google_storage_bucket" "terraform_state" {
   name     = "${var.project_id}-terraform-state"
