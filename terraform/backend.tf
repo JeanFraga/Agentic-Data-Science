@@ -1,6 +1,7 @@
 terraform {
   backend "gcs" {
-    bucket = "agentic-data-science-460701-terraform-state"
+    # bucket will be configured via -backend-config in GitHub Actions
+    # or terraform init -backend-config="bucket=PROJECT_ID-terraform-state"
     prefix = "terraform/state"
   }
 }

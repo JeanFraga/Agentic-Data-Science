@@ -25,6 +25,8 @@ resource "google_storage_bucket" "terraform_state" {
     environment = var.environment
     purpose     = "terraform-state"
   }
+  
+  depends_on = [google_project_service.required_apis]
 }
 
 resource "google_bigquery_dataset" "test_dataset" {
@@ -36,6 +38,8 @@ resource "google_bigquery_dataset" "test_dataset" {
     environment = var.environment
     project     = var.project_id
   }
+  
+  depends_on = [google_project_service.required_apis]
 }
 
 # create a cloud storage bucket for temporary data
@@ -46,4 +50,6 @@ resource "google_storage_bucket" "temp_bucket" {
     environment = var.environment
     project     = var.project_id
   }
+  
+  depends_on = [google_project_service.required_apis]
 }

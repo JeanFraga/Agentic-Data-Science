@@ -51,29 +51,40 @@ This repository implements a complete data pipeline with:
 - Git and PowerShell (for local setup)
 - Terraform installed locally (optional, for testing)
 
-### 1. Initial Setup
+### 1. Initial Setup (IAM as Code)
 
 ```powershell
 # Clone and setup the repository
 git clone <your-repo-url>
 cd "Agentic Data Science"
 
-# Run the setup script
-.\scripts\setup.ps1 -ProjectId "your-gcp-project-id" -Region "us-central1" -Environment "dev"
+# Run the IAM migration script
+.\scripts\migrate_to_iam_as_code.ps1 -ProjectId "your-gcp-project-id" -Region "us-central1" -Environment "dev"
 ```
 
-### 2. Configure GitHub Secrets
+### 2. Generate Service Account (One-time)
+
+```powershell
+# Deploy locally to generate service account key
+cd terraform
+terraform init -backend-config="bucket=your-project-id-terraform-state"
+terraform apply
+
+# The github-actions-key.json file will be created automatically
+```
+
+### 3. Configure GitHub Secrets
 
 Follow the detailed guide in [`GITHUB_SECRETS_SETUP.md`](GITHUB_SECRETS_SETUP.md) to configure:
 - `GCP_PROJECT_ID`
 - `GCP_REGION` 
 - `GCP_ENVIRONMENT`
-- `GCP_SERVICE_ACCOUNT_KEY`
+- `GCP_SERVICE_ACCOUNT_KEY` (use content from generated `github-actions-key.json`)
 
-### 3. Deploy
+### 4. Deploy via CI/CD
 
 ```powershell
-# Commit configuration and push to trigger deployment
+# Commit configuration and push to trigger automated deployment
 git add .
 git commit -m "Configure deployment for project"
 git push origin main

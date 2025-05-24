@@ -24,7 +24,7 @@ resource "google_cloudfunctions2_function" "titanic_data_loader" {
       DATASET_ID = "test_dataset"
       TABLE_ID   = "titanic"
     }
-    service_account_email = google_service_account.function_sa.email
+    service_account_email = google_service_account.cloud_function.email
   }
 
   event_trigger {
@@ -42,64 +42,11 @@ resource "google_cloudfunctions2_function" "titanic_data_loader" {
       value     = "titanic.csv"
     }
   }
-
   depends_on = [
-    google_project_service.cloudfunctions,
-    google_project_service.eventarc,
-    google_project_service.run,
-    google_project_service.pubsub
+    google_project_service.required_apis,
+    google_service_account.cloud_function,
+    google_project_iam_member.cloud_function_roles
   ]
-}
-
-# Service account for the Cloud Function
-resource "google_service_account" "function_sa" {
-  account_id   = "titanic-loader-sa"
-  display_name = "Titanic Data Loader Service Account"
-  description  = "Service account for the Titanic data loader Cloud Function"
-}
-
-# IAM bindings for the service account
-resource "google_project_iam_member" "function_sa_bigquery_admin" {
-  project = var.project_id
-  role    = "roles/bigquery.dataEditor"
-  member  = "serviceAccount:${google_service_account.function_sa.email}"
-}
-
-resource "google_project_iam_member" "function_sa_storage_reader" {
-  project = var.project_id
-  role    = "roles/storage.objectViewer"
-  member  = "serviceAccount:${google_service_account.function_sa.email}"
-}
-
-# Enable required APIs
-resource "google_project_service" "cloudfunctions" {
-  service = "cloudfunctions.googleapis.com"
-  project = var.project_id
-}
-
-resource "google_project_service" "eventarc" {
-  service = "eventarc.googleapis.com"
-  project = var.project_id
-}
-
-resource "google_project_service" "run" {
-  service = "run.googleapis.com"
-  project = var.project_id
-}
-
-resource "google_project_service" "pubsub" {
-  service = "pubsub.googleapis.com"
-  project = var.project_id
-}
-
-resource "google_project_service" "bigquery" {
-  service = "bigquery.googleapis.com"
-  project = var.project_id
-}
-
-resource "google_project_service" "storage" {
-  service = "storage.googleapis.com"
-  project = var.project_id
 }
 
 # Bucket for function source code
@@ -113,6 +60,8 @@ resource "google_storage_bucket" "function_source" {
     environment = var.environment
     purpose     = "cloud-function-source"
   }
+  
+  depends_on = [google_project_service.required_apis]
 }
 
 # Create zip file with function code

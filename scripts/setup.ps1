@@ -6,7 +6,7 @@ param(
     [string]$ProjectId,
     
     [Parameter(Mandatory=$false)]
-    [string]$Region = "us-central1",
+    [string]$Region = "us-east-1",
     
     [Parameter(Mandatory=$false)]
     [string]$Environment = "dev"
