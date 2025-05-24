@@ -67,16 +67,9 @@ resource "google_project_iam_member" "cloud_function_bigquery_admin" {
   depends_on = [google_service_account.cloud_function]
 }
 
-# Generate service account key for GitHub Actions (initial setup only)
-resource "google_service_account_key" "github_actions_key" {
-  service_account_id = google_service_account.github_actions.name
-  public_key_type    = "TYPE_X509_PEM_FILE"
-  
-  depends_on = [
-    google_service_account.github_actions,
-    google_project_iam_member.github_actions_roles
-  ]
-}
+# Note: Service account key should be generated manually or via gcloud CLI
+# to avoid permission issues during initial setup. The key is already
+# available in github-actions-key.json from previous successful run.
 
 # Output service account information
 output "github_actions_service_account_email" {
@@ -89,25 +82,5 @@ output "cloud_function_service_account_email" {
   value       = google_service_account.cloud_function.email
 }
 
-output "github_actions_service_account_key" {
-  description = "Private key for GitHub Actions service account (base64 encoded)"
-  value       = google_service_account_key.github_actions_key.private_key
-  sensitive   = true
-}
-
-# Save the key to a local file for GitHub secret setup
-resource "local_file" "github_actions_key_file" {
-  content  = base64decode(google_service_account_key.github_actions_key.private_key)
-  filename = "${path.module}/../github-actions-key.json"
-  
-  provisioner "local-exec" {
-    command = "Write-Host 'GitHub Actions service account key saved to github-actions-key.json' -ForegroundColor Green"
-    interpreter = ["powershell", "-Command"]
-  }
-  
-  provisioner "local-exec" {
-    when    = destroy
-    command = "Remove-Item -Path '${path.module}/../github-actions-key.json' -Force -ErrorAction SilentlyContinue"
-    interpreter = ["powershell", "-Command"]
-  }
-}
+# Note: github-actions-key.json already exists from previous successful deployment
+# Update the GitHub secret GCP_SERVICE_ACCOUNT_KEY with the content of that file

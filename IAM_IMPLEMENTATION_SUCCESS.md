@@ -1,5 +1,4 @@
 # IAM as Code Implementation - COMPLETED ✅
-# Removed from github due to sensitive information
 
 ## 🎉 SUCCESS: Complete IAM Management Implementation
 
@@ -14,10 +13,10 @@ The "Agentic Data Science" repository has been successfully converted from manua
 - ✅ Automated Google Cloud API enablement
 
 ### 2. **Service Account Management**
-- ✅ **GitHub Actions Service Account**: `github-actions-terraform@agentic-data-science-460701.iam.gserviceaccount.com`
+- ✅ **GitHub Actions Service Account**: `github-actions-terraform@{project-id}.iam.gserviceaccount.com`
   - Roles: bigquery.admin, storage.admin, cloudfunctions.admin, iam.serviceAccountAdmin, etc.
   - **Service account key generated**: `github-actions-key.json`
-- ✅ **Cloud Function Service Account**: `cloud-function-bigquery@agentic-data-science-460701.iam.gserviceaccount.com`
+- ✅ **Cloud Function Service Account**: `cloud-function-bigquery@{project-id}.iam.gserviceaccount.com`
   - Roles: bigquery.dataEditor, bigquery.user, storage.objectViewer
   - Minimal permissions following security best practices
 
