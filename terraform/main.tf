@@ -31,22 +31,60 @@ resource "google_storage_bucket" "terraform_state" {
   name     = "${var.project_id}-terraform-state"
   location = var.region
   
-  # Prevent accidental deletion of this bucket
-  lifecycle {
-    prevent_destroy = true
-  }
-    # Enable versioning for state file history
+  # Enable versioning for state file safety
   versioning {
     enabled = true
   }
   
-  # Enable uniform bucket-level access
-  uniform_bucket_level_access = true
-  
-  labels = {
-    environment = var.environment
-    purpose     = "terraform-state"
+  # Lifecycle management for state files
+  lifecycle_rule {
+    condition {
+      num_newer_versions = 10
+    }
+    action {
+      type = "Delete"
+    }
   }
+  
+  # Security settings
+  uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
+  
+  depends_on = [google_project_service.required_apis]
+}
+
+# Cloud Storage bucket for Terraform plan files
+resource "google_storage_bucket" "terraform_plans" {
+  name     = "${var.project_id}-terraform-plans"
+  location = var.region
+  
+  # Enable versioning for plan file history
+  versioning {
+    enabled = true
+  }
+  
+  # Lifecycle management for plan files (shorter retention)
+  lifecycle_rule {
+    condition {
+      age = 30  # Delete plan files older than 30 days
+    }
+    action {
+      type = "Delete"
+    }
+  }
+  
+  lifecycle_rule {
+    condition {
+      num_newer_versions = 5  # Keep only 5 versions of each plan
+    }
+    action {
+      type = "Delete"
+    }
+  }
+  
+  # Security settings
+  uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
   
   depends_on = [google_project_service.required_apis]
 }

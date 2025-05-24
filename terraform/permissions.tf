@@ -43,6 +43,18 @@ resource "google_project_iam_member" "github_actions_roles" {
   depends_on = [google_service_account.github_actions]
 }
 
+# Specific permissions for GitHub Actions to access plan bucket
+resource "google_storage_bucket_iam_member" "github_actions_plans_access" {
+  bucket = google_storage_bucket.terraform_plans.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.github_actions.email}"
+  
+  depends_on = [
+    google_service_account.github_actions,
+    google_storage_bucket.terraform_plans
+  ]
+}
+
 # IAM roles for Cloud Function service account (Data operations)
 resource "google_project_iam_member" "cloud_function_roles" {
   for_each = toset([
@@ -53,15 +65,6 @@ resource "google_project_iam_member" "cloud_function_roles" {
   
   project = var.project_id
   role    = each.value
-  member  = "serviceAccount:${google_service_account.cloud_function.email}"
-  
-  depends_on = [google_service_account.cloud_function]
-}
-
-# Additional specific permissions for Cloud Function to create tables
-resource "google_project_iam_member" "cloud_function_bigquery_admin" {
-  project = var.project_id
-  role    = "roles/bigquery.admin"
   member  = "serviceAccount:${google_service_account.cloud_function.email}"
   
   depends_on = [google_service_account.cloud_function]
@@ -80,6 +83,16 @@ output "github_actions_service_account_email" {
 output "cloud_function_service_account_email" {
   description = "Email of the Cloud Function service account"
   value       = google_service_account.cloud_function.email
+}
+
+output "terraform_state_bucket" {
+  description = "GCS bucket for Terraform state files"
+  value       = google_storage_bucket.terraform_state.name
+}
+
+output "terraform_plans_bucket" {
+  description = "GCS bucket for Terraform plan files"
+  value       = google_storage_bucket.terraform_plans.name
 }
 
 # Note: github-actions-key.json already exists from previous successful deployment

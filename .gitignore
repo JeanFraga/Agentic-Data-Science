@@ -129,3 +129,13 @@ dmypy.json
 .pyre/
 github-actions-key.json
 IAM_IMPLEMENTATION_SUCCESS.md
+
+# Terraform files that should never be committed
+*.tfplan
+*.tfplan.*
+terraform.tfstate
+terraform.tfstate.*
+.terraform/
+.terraform.lock.hcl
+auth.json
+terraform/plans/

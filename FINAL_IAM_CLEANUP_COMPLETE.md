@@ -71,7 +71,7 @@ Complete IAM (Identity and Access Management) cleanup to achieve **least privile
 
 ```bash
 # The service account key is already generated at:
-# h:\My Drive\Github\Agentic Data Science\github-actions-key.json
+# ./github-actions-key.json (in the repository root)
 # Copy the entire JSON content to GitHub repository secrets
 ```
 
@@ -161,9 +161,9 @@ roles/storage.objectViewer            ← For reading uploaded files
 
 ⚠️ **CRITICAL NEXT STEP**: Update your GitHub repository secret with the correct service account key:
 
-1. **Copy the service account key** (already copied to clipboard):
+1. **Copy the service account key** (already generated in repository root):
    ```powershell
-   Get-Content "h:\My Drive\Github\Agentic Data Science\github-actions-key.json"
+   Get-Content "github-actions-key.json"
    ```
 
 2. **Go to GitHub Repository Settings**:

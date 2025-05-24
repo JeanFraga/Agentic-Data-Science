@@ -58,15 +58,6 @@ resource "google_project_iam_member" "cloud_function_roles" {
   depends_on = [google_service_account.cloud_function]
 }
 
-# Additional specific permissions for Cloud Function to create tables
-resource "google_project_iam_member" "cloud_function_bigquery_admin" {
-  project = var.project_id
-  role    = "roles/bigquery.admin"
-  member  = "serviceAccount:${google_service_account.cloud_function.email}"
-  
-  depends_on = [google_service_account.cloud_function]
-}
-
 # Generate service account key for GitHub Actions (initial setup only)
 resource "google_service_account_key" "github_actions_key" {
   service_account_id = google_service_account.github_actions.name
