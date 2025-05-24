@@ -50,3 +50,12 @@ jobs:
         working-directory: ./terraform
         # Only run on pushes to the main branch (e.g., after a PR is merged)
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+      - name: 'Check BigQuery Dataset and Load Titanic Data'
+        id: bigquery_check
+        run: |
+          chmod +x ../scripts/check_and_load_titanic_data.sh
+          ../scripts/check_and_load_titanic_data.sh ${{ secrets.GCP_PROJECT_ID }}
+        working-directory: ./terraform
+        # Only run on pushes to the main branch (after terraform apply)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
