@@ -73,12 +73,12 @@ if [ "$NEED_DATA" = "true" ]; then
     echo "Waiting for Cloud Function processing to complete..."
     sleep 25
     
-    # Check if BigQuery table was created
-    if gcloud alpha bq tables describe "test_dataset.titanic" --project="$PROJECT_ID" >/dev/null 2>&1; then
+    # Check if BigQuery table was created (using standard bq command instead of alpha)
+    if bq show --project_id="$PROJECT_ID" "test_dataset.titanic" >/dev/null 2>&1; then
         echo "✅ Cloud Function successfully loaded data to BigQuery table 'test_dataset.titanic'"
         
-        # Get row count
-        ROW_COUNT=$(gcloud alpha bq query --project="$PROJECT_ID" --use_legacy_sql=false --format="value(f0_)" "SELECT COUNT(*) FROM \`$PROJECT_ID.test_dataset.titanic\`")
+        # Get row count using standard bq query
+        ROW_COUNT=$(bq query --project_id="$PROJECT_ID" --use_legacy_sql=false --format="csv" --quiet "SELECT COUNT(*) FROM \`$PROJECT_ID.test_dataset.titanic\`" | tail -n 1)
         echo "📊 Table contains $ROW_COUNT rows"
         
         # Verify data quality
@@ -89,8 +89,8 @@ if [ "$NEED_DATA" = "true" ]; then
         fi
     else
         echo "❌ Cloud Function may have failed. Falling back to direct BigQuery load..."
-        gcloud alpha bq load \
-            --project="$PROJECT_ID" \
+        bq load \
+            --project_id="$PROJECT_ID" \
             --source_format=CSV \
             --skip_leading_rows=1 \
             --autodetect \

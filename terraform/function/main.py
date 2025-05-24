@@ -37,33 +37,44 @@ def load_titanic_to_bigquery(cloud_event):
         # Initialize clients
         storage_client = storage.Client(project=project_id)
         bigquery_client = bigquery.Client(project=project_id)
-        
-        # Download the CSV file from Cloud Storage
+          # Download the CSV file from Cloud Storage
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(file_name)
         
         logger.info(f"Downloading {file_name} from {bucket_name}")
-        csv_content = blob.download_as_text()
-        
-        # Read CSV into pandas DataFrame
+        try:
+            csv_content = blob.download_as_text()
+        except UnicodeDecodeError:
+            # Try with different encodings if UTF-8 fails
+            logger.info("UTF-8 decoding failed, trying latin-1 encoding")
+            csv_bytes = blob.download_as_bytes()
+            try:
+                csv_content = csv_bytes.decode('latin-1')
+            except UnicodeDecodeError:
+                logger.info("latin-1 decoding failed, trying cp1252 encoding")
+                csv_content = csv_bytes.decode('cp1252', errors='replace')
+          # Read CSV into pandas DataFrame
         df = pd.read_csv(io.StringIO(csv_content))
         logger.info(f"Successfully read CSV with {len(df)} rows and {len(df.columns)} columns")
+        logger.info(f"Column names: {list(df.columns)}")
         
         # Clean column names (remove spaces, special characters)
         df.columns = df.columns.str.replace(' ', '_').str.replace('/', '_').str.lower()
+        logger.info(f"Cleaned column names: {list(df.columns)}")
         
         # Get dataset and table references
         dataset_ref = bigquery_client.dataset(dataset_id)
         table_ref = dataset_ref.table(table_id)
-        
-        # Configure the load job
+          # Configure the load job
         job_config = bigquery.LoadJobConfig(
-            # Automatically detect schema
-            autodetect=True,
+            # Create schema from DataFrame columns
+            schema=[
+                bigquery.SchemaField(col, "STRING") for col in df.columns
+            ],
             # Overwrite the table if it exists
             write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
-            # Skip header row since pandas DataFrame doesn't include it
-            skip_leading_rows=0,
+            # Skip header row since we're defining schema manually
+            skip_leading_rows=1,
             source_format=bigquery.SourceFormat.CSV,
         )
         
