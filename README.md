@@ -47,8 +47,47 @@ This repository implements a complete data pipeline with:
 
 ### Prerequisites
 - Google Cloud Project with billing enabled
-- GitHub repository
+- GitHub repository with Actions enabled
+- Git and PowerShell (for local setup)
 - Terraform installed locally (optional, for testing)
+
+### 1. Initial Setup
+
+```powershell
+# Clone and setup the repository
+git clone <your-repo-url>
+cd "Agentic Data Science"
+
+# Run the setup script
+.\scripts\setup.ps1 -ProjectId "your-gcp-project-id" -Region "us-central1" -Environment "dev"
+```
+
+### 2. Configure GitHub Secrets
+
+Follow the detailed guide in [`GITHUB_SECRETS_SETUP.md`](GITHUB_SECRETS_SETUP.md) to configure:
+- `GCP_PROJECT_ID`
+- `GCP_REGION` 
+- `GCP_ENVIRONMENT`
+- `GCP_SERVICE_ACCOUNT_KEY`
+
+### 3. Deploy
+
+```powershell
+# Commit configuration and push to trigger deployment
+git add .
+git commit -m "Configure deployment for project"
+git push origin main
+```
+
+### 4. Validate Deployment
+
+```powershell
+# Run validation script
+.\scripts\validate_deployment.sh your-project-id
+
+# Check BigQuery data
+# The pipeline automatically loads the Titanic dataset
+```
 - gcloud CLI configured (optional, for testing)
 
 ### 1. Clone Repository

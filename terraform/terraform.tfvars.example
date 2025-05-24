@@ -1,0 +1,12 @@
+# Terraform variable values
+# Copy this file and update with your actual values
+
+# GCP Project Configuration
+project_id = "your-gcp-project-id-here"
+region     = "us-central1"
+environment = "dev"
+
+# Example values:
+# project_id = "agentic-data-science-12345"
+# region     = "us-central1"
+# environment = "dev"
