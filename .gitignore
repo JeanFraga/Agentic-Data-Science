@@ -105,6 +105,7 @@ venv.bak/
 *.tfvars
 .terraform/
 .terraform*
+auth.json
 
 # Spyder project settings
 .spyderproject

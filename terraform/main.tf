@@ -4,6 +4,29 @@ provider "google" {
   region  = var.region
 }
 
+# Cloud Storage bucket for Terraform state
+resource "google_storage_bucket" "terraform_state" {
+  name     = "${var.project_id}-terraform-state"
+  location = var.region
+  
+  # Prevent accidental deletion of this bucket
+  lifecycle {
+    prevent_destroy = true
+  }
+    # Enable versioning for state file history
+  versioning {
+    enabled = true
+  }
+  
+  # Enable uniform bucket-level access
+  uniform_bucket_level_access = true
+  
+  labels = {
+    environment = var.environment
+    purpose     = "terraform-state"
+  }
+}
+
 resource "google_bigquery_dataset" "test_dataset" {
   dataset_id = "test_dataset"
   friendly_name = "test_dataset"
