@@ -103,6 +103,8 @@ ENV/
 env.bak/
 venv.bak/
 *.tfvars
+.terraform/
+.terraform*
 
 # Spyder project settings
 .spyderproject
