@@ -8,6 +8,7 @@ resource "google_cloudfunctions2_function" "titanic_data_loader" {
     runtime     = "python311"
     entry_point = "load_titanic_to_bigquery"
     
+    # Use local source for now - GitHub deployment requires manual setup
     source {
       storage_source {
         bucket = google_storage_bucket.function_source.name
@@ -29,6 +30,7 @@ resource "google_cloudfunctions2_function" "titanic_data_loader" {
       TABLE_ID   = "titanic"
     }
   }
+
   event_trigger {
     trigger_region = var.region
     event_type     = "google.cloud.storage.object.v1.finalized"
@@ -47,29 +49,27 @@ resource "google_cloudfunctions2_function" "titanic_data_loader" {
   ]
 }
 
-# Bucket for function source code
+# Storage bucket for function source code
 resource "google_storage_bucket" "function_source" {
-  name     = "${var.project_id}-function-source"
-  location = var.region
-  
+  name                        = "${var.project_id}-function-source"
+  location                    = var.region
   uniform_bucket_level_access = true
-  
+  force_destroy               = true
+
   labels = {
     environment = var.environment
     purpose     = "cloud-function-source"
   }
-  
-  depends_on = [google_project_service.required_apis]
 }
 
-# Create zip file with function code
+# Create zip file of function source
 data "archive_file" "function_zip" {
   type        = "zip"
   output_path = "${path.module}/function-source.zip"
   source_dir  = "${path.module}/function"
 }
 
-# Upload function source code
+# Upload function source to storage
 resource "google_storage_bucket_object" "function_source_zip" {
   name   = "function-source-${data.archive_file.function_zip.output_md5}.zip"
   bucket = google_storage_bucket.function_source.name

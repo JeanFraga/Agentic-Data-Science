@@ -14,7 +14,25 @@ variable "environment" {
   type        = string
   default     = "dev"
   validation {
-    condition = contains(["dev", "staging", "prod"], var.environment)
+    condition     = contains(["dev", "staging", "prod"], var.environment)
     error_message = "Environment must be one of: dev, staging, prod."
   }
+}
+
+variable "github_owner" {
+  description = "GitHub repository owner/organization"
+  type        = string
+  default     = "JeanFraga"
+}
+
+variable "github_repo_name" {
+  description = "GitHub repository name"
+  type        = string
+  default     = "agentic-data-science"
+}
+
+variable "deployment_branch" {
+  description = "Git branch to deploy from"
+  type        = string
+  default     = "main"
 }
