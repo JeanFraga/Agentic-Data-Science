@@ -128,7 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 github-actions-key.json
-IAM_IMPLEMENTATION_SUCCESS.md
 
 # Terraform files that should never be committed
 *.tfplan

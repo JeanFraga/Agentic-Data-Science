@@ -43,6 +43,18 @@ This repository implements a complete data pipeline with:
 - Cloud Run API
 - Pub/Sub API
 
+## 📚 Documentation
+
+For detailed implementation guides and reports, see our comprehensive documentation:
+
+**📋 [Documentation Index](docs/INDEX.md)** - Complete navigation guide
+
+### Quick Links
+- 🎯 [Final Success Report](docs/FINAL_SUCCESS_REPORT.md) - Project completion summary
+- 🔐 [IAM as Code Guide](docs/IAM_AS_CODE_GUIDE.md) - Security implementation
+- 🧪 [Cloud Function Testing Guide](docs/CLOUD_FUNCTION_TESTING_GUIDE.md) - Testing procedures
+- 🛡️ [Security Validation Report](docs/SECURITY_VALIDATION_REPORT.md) - Security compliance
+
 ## 🛠️ Quick Start
 
 ### Prerequisites
