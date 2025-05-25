@@ -1,29 +1,42 @@
-# Cloud Function for automatic BigQuery data loading
-resource "google_cloudfunctions_function" "titanic_data_loader" {
-  name                  = "titanic-data-loader"
-  region                = var.region
-  description           = "Automatically loads titanic.csv files to BigQuery when uploaded to temp bucket"
-  runtime               = "python311"
-  available_memory_mb   = 256
-  timeout               = 300
-  entry_point           = "load_titanic_to_bigquery"
-  service_account_email = google_service_account.cloud_function.email
+# Cloud Function Gen 2 for automatic BigQuery data loading
+resource "google_cloudfunctions2_function" "titanic_data_loader" {
+  name        = "titanic-data-loader"
+  location    = var.region
+  description = "Automatically loads titanic.csv files to BigQuery when uploaded to temp bucket"
 
-  environment_variables = {
-    PROJECT_ID = var.project_id
-    DATASET_ID = "test_dataset"
-    TABLE_ID   = "titanic"
+  build_config {
+    runtime     = "python311"
+    entry_point = "load_titanic_to_bigquery"
+    
+    source {
+      storage_source {
+        bucket = google_storage_bucket.function_source.name
+        object = google_storage_bucket_object.function_source_zip.name
+      }
+    }
   }
 
-  source_archive_bucket = google_storage_bucket.function_source.name
-  source_archive_object = google_storage_bucket_object.function_source_zip.name
-
-  event_trigger {
-    event_type = "google.storage.object.finalize"
-    resource   = google_storage_bucket.temp_bucket.name
+  service_config {
+    max_instance_count    = 100
+    min_instance_count    = 0
+    available_memory      = "256M"
+    timeout_seconds       = 300
+    service_account_email = google_service_account.cloud_function.email
     
-    failure_policy {
-      retry = true
+    environment_variables = {
+      PROJECT_ID = var.project_id
+      DATASET_ID = "test_dataset"
+      TABLE_ID   = "titanic"
+    }
+  }
+  event_trigger {
+    trigger_region = var.region
+    event_type     = "google.cloud.storage.object.v1.finalized"
+    retry_policy   = "RETRY_POLICY_RETRY"
+    
+    event_filters {
+      attribute = "bucket"
+      value     = google_storage_bucket.temp_bucket.name
     }
   }
 

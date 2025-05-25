@@ -10,6 +10,7 @@
 - [✅ **IAM Implementation Success**](IAM_IMPLEMENTATION_SUCCESS.md) - Detailed IAM setup verification
 - [🎯 **Deployment Success**](DEPLOYMENT_SUCCESS.md) - Infrastructure deployment confirmation
 - [🔄 **Terraform Plan Migration Complete**](TFPLAN_MIGRATION_COMPLETE.md) - Plan storage migration success
+- [🚀 **Gen 2 Migration Success**](GEN2_MIGRATION_SUCCESS.md) - Cloud Functions Gen 2 migration complete
 
 ### 🔧 **Implementation Guides**
 - [🔐 **IAM as Code Guide**](IAM_AS_CODE_GUIDE.md) - Complete IAM implementation guide

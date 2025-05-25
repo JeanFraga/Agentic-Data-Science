@@ -16,7 +16,8 @@ resource "google_project_service" "required_apis" {
     "pubsub.googleapis.com",
     "iam.googleapis.com",
     "cloudresourcemanager.googleapis.com",
-    "serviceusage.googleapis.com"
+    "serviceusage.googleapis.com",
+    "artifactregistry.googleapis.com"
   ])
   
   project = var.project_id
