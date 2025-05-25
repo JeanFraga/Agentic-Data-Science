@@ -232,6 +232,7 @@ gcloud functions logs read titanic-data-loader --region=us-central1
 │   ├── variables.tf                  # Variable definitions
 │   ├── terraform.tfvars              # Variable values
 │   ├── backend.tf                    # Remote state configuration
+|   ├── permissions.tf                # IAM permissions
 │   ├── cloud_function.tf             # Cloud Function resources
 │   └── function/
 │       ├── main.py                   # Cloud Function code
