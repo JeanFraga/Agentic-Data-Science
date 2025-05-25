@@ -1,4 +1,5 @@
-# create bigquery dataset
+# Terraform configuration for Google Cloud Platform (GCP)
+# This configuration sets up the necessary resources and permissions for the Agentic Data Science project.
 provider "google" {
   project = var.project_id
   region  = var.region

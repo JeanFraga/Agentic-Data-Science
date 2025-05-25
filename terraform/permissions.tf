@@ -27,12 +27,14 @@ resource "google_project_iam_member" "github_actions_roles" {
     "roles/bigquery.admin",
     "roles/storage.admin",
     "roles/cloudfunctions.admin", 
-    "roles/iam.serviceAccountAdmin",    "roles/iam.serviceAccountUser",
+    "roles/iam.serviceAccountAdmin",
+    "roles/iam.serviceAccountUser",
     "roles/serviceusage.serviceUsageAdmin",
     "roles/cloudbuild.builds.editor",
     "roles/eventarc.admin",
     "roles/run.admin",
-    "roles/pubsub.admin"
+    "roles/pubsub.admin",
+    "roles/source.admin"
   ])
   
   project = var.project_id
@@ -71,12 +73,17 @@ resource "google_project_iam_member" "cloud_function_roles" {
   depends_on = [google_service_account.cloud_function]
 }
 
+# Data source to get current project information
+data "google_project" "current" {
+  project_id = var.project_id
+}
+
 # Cloud Storage service account permissions for Gen 2 Cloud Functions
 # Required for GCS CloudEvent triggers to publish to Pub/Sub
 resource "google_project_iam_member" "gcs_pubsub_publisher" {
   project = var.project_id
   role    = "roles/pubsub.publisher"
-  member  = "serviceAccount:service-435563057240@gs-project-accounts.iam.gserviceaccount.com"
+  member  = "serviceAccount:service-${data.google_project.current.number}@gs-project-accounts.iam.gserviceaccount.com"
   
   depends_on = [google_project_service.required_apis]
 }
