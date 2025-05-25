@@ -8,11 +8,13 @@ resource "google_cloudfunctions2_function" "titanic_data_loader" {
     runtime     = "python311"
     entry_point = "load_titanic_to_bigquery"
     
-    # Use local source for now - GitHub deployment requires manual setup
+    # Use GitHub repository source for maintainable deployments
     source {
-      storage_source {
-        bucket = google_storage_bucket.function_source.name
-        object = google_storage_bucket_object.function_source_zip.name
+      repo_source {
+        project_id   = var.project_id
+        repo_name    = var.github_repo_name
+        branch_name  = "main"
+        dir          = "cloud_function_src"
       }
     }
   }
@@ -41,7 +43,6 @@ resource "google_cloudfunctions2_function" "titanic_data_loader" {
       value     = google_storage_bucket.temp_bucket.name
     }
   }
-
   depends_on = [
     google_project_service.required_apis,
     google_service_account.cloud_function,
@@ -49,29 +50,44 @@ resource "google_cloudfunctions2_function" "titanic_data_loader" {
   ]
 }
 
-# Storage bucket for function source code
-resource "google_storage_bucket" "function_source" {
-  name                        = "${var.project_id}-function-source"
-  location                    = var.region
-  uniform_bucket_level_access = true
-  force_destroy               = true
+# Cloud Function Gen 2 for Agent SDK HTTP API
+resource "google_cloudfunctions2_function" "agent_sdk_api" {
+  name        = "agent-sdk-api"
+  location    = var.region
+  description = "HTTP API for Agent SDK natural language ML interactions"
 
-  labels = {
-    environment = var.environment
-    purpose     = "cloud-function-source"
+  build_config {
+    runtime     = "python311"
+    entry_point = "main"
+    
+    # Use GitHub repository source for maintainable deployments
+    source {
+      repo_source {
+        project_id   = var.project_id
+        repo_name    = var.github_repo_name
+        branch_name  = "main"
+        dir          = "cloud_function_src"
+      }
+    }
   }
-}
 
-# Create zip file of function source
-data "archive_file" "function_zip" {
-  type        = "zip"
-  output_path = "${path.module}/function-source.zip"
-  source_dir  = "${path.module}/function"
-}
+  service_config {
+    max_instance_count    = 100
+    min_instance_count    = 0
+    available_memory      = "512M"
+    timeout_seconds       = 300
+    service_account_email = google_service_account.cloud_function.email
+    
+    environment_variables = {
+      PROJECT_ID    = var.project_id
+      DATASET_ID    = "test_dataset"
+      GEMINI_API_KEY = var.gemini_api_key
+    }
+  }
 
-# Upload function source to storage
-resource "google_storage_bucket_object" "function_source_zip" {
-  name   = "function-source-${data.archive_file.function_zip.output_md5}.zip"
-  bucket = google_storage_bucket.function_source.name
-  source = data.archive_file.function_zip.output_path
+  depends_on = [
+    google_project_service.required_apis,
+    google_service_account.cloud_function,
+    google_project_iam_member.cloud_function_roles
+  ]
 }

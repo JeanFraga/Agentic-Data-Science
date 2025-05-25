@@ -36,3 +36,9 @@ variable "deployment_branch" {
   type        = string
   default     = "main"
 }
+
+variable "gemini_api_key" {
+  description = "Google Gemini API key for natural language processing"
+  type        = string
+  sensitive   = true
+}
