@@ -1,6 +1,6 @@
 # Agentic Data Science
 
-[![Terraform CI/CD](https://github.com/yourusername/agentic-data-science/actions/workflows/terraform.yml/badge.svg)](https://github.com/yourusername/agentic-data-science/actions/workflows/terraform.yml)
+[![Terraform CI/CD](https://github.com/JeanFraga/agentic-data-science/actions/workflows/terraform.yml/badge.svg)](https://github.com/JeanFraga/agentic-data-science/actions/workflows/terraform.yml)
 
 An automated, event-driven data science platform built on Google Cloud Platform (GCP) that demonstrates Infrastructure as Code (IaC) principles with Terraform, automated data ingestion via Cloud Functions, and BigQuery analytics using the classic Titanic dataset.
 

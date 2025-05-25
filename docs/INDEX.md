@@ -22,12 +22,16 @@
 - [🔐 **Final IAM Cleanup Complete**](FINAL_IAM_CLEANUP_COMPLETE.md) - IAM cleanup and optimization
 - [🔧 **Terraform IAM Conflict Resolved**](TERRAFORM_IAM_CONFLICT_RESOLVED.md) - Conflict resolution documentation
 
+### 🧹 **Cleanup & Maintenance**
+- [🎉 **Final Cleanup Completion**](FINAL_CLEANUP_COMPLETION.md) - Complete cleanup success report
+- [🧹 **File Cleanup Analysis**](FILE_CLEANUP_ANALYSIS.md) - Core vs. removable files analysis
+- [🧹 **Directory Cleanup Complete**](DIRECTORY_CLEANUP_COMPLETE.md) - Organization completion report
+
 ### 📋 **Project Management**
 - [📋 **Next Steps Checklist**](NEXT_STEPS_CHECKLIST.md) - Future development roadmap
 - [📋 **Final Checklist**](FINAL_CHECKLIST.md) - Project completion verification
 - [🔄 **Project ID Replacement Complete**](PROJECT_ID_REPLACEMENT_COMPLETE.md) - Configuration standardization
 - [📊 **Deployment Status**](DEPLOYMENT_STATUS.md) - Current deployment state
-- [🧹 **Directory Cleanup Complete**](DIRECTORY_CLEANUP_COMPLETE.md) - Organization completion report
 
 ## 🚀 **Quick Start**
 
