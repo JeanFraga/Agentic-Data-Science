@@ -21,8 +21,7 @@ resource "google_project_service" "required_apis" {
     "artifactregistry.googleapis.com",
     # ADK and Vertex AI APIs
     "aiplatform.googleapis.com",
-    "compute.googleapis.com",
-    "secretmanager.googleapis.com"
+    "compute.googleapis.com"
   ])
   
   project = var.project_id
@@ -180,56 +179,6 @@ resource "google_bigquery_dataset" "titanic_dataset" {
   ]
 }
 
-# Secret Manager secret for Gemini API key
-resource "google_secret_manager_secret" "gemini_api_key" {
-  secret_id = "gemini-api-key"
-  
-  labels = {
-    environment = var.environment
-    service     = "adk_agents"
-  }
-  
-  replication {
-    auto {}
-  }
-  
-  depends_on = [
-    google_project_service.required_apis,
-    google_project_iam_member.github_actions_roles
-  ]
-}
-
-# Secret version for Gemini API key
-resource "google_secret_manager_secret_version" "gemini_api_key_version" {
-  secret         = google_secret_manager_secret.gemini_api_key.id
-  secret_data_wo = var.gemini_api_key
-  
-  depends_on = [google_secret_manager_secret.gemini_api_key]
-}
-
-# Grant ADK agents access to the Gemini API key secret
-resource "google_secret_manager_secret_iam_member" "adk_agent_secret_access" {
-  secret_id = google_secret_manager_secret.gemini_api_key.secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.adk_agent.email}"
-  
-  depends_on = [
-    google_secret_manager_secret.gemini_api_key,
-    google_service_account.adk_agent
-  ]
-}
-
-resource "google_secret_manager_secret_iam_member" "vertex_agent_secret_access" {
-  secret_id = google_secret_manager_secret.gemini_api_key.secret_id
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.vertex_agent.email}"
-  
-  depends_on = [
-    google_secret_manager_secret.gemini_api_key,
-    google_service_account.vertex_agent
-  ]
-}
-
 # Storage bucket for ADK agent packages and artifacts
 resource "google_storage_bucket" "adk_artifacts" {
   name     = "${var.project_id}-adk-artifacts"
@@ -286,11 +235,6 @@ output "titanic_dataset_id" {
 output "titanic_dataset_location" {
   description = "BigQuery dataset location"
   value       = google_bigquery_dataset.titanic_dataset.location
-}
-
-output "gemini_api_key_secret_name" {
-  description = "Secret Manager secret name for Gemini API key"
-  value       = google_secret_manager_secret.gemini_api_key.secret_id
 }
 
 output "adk_artifacts_bucket" {

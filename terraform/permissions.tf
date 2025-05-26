@@ -33,8 +33,7 @@ resource "google_project_iam_member" "github_actions_roles" {
     "roles/cloudbuild.builds.editor",
     "roles/eventarc.admin",
     "roles/run.admin",
-    "roles/pubsub.admin",
-    "roles/secretmanager.admin"
+    "roles/pubsub.admin"
   ])
   
   project = var.project_id
