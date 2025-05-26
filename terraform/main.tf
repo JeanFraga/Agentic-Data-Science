@@ -198,8 +198,8 @@ resource "google_secret_manager_secret" "gemini_api_key" {
 
 # Secret version for Gemini API key
 resource "google_secret_manager_secret_version" "gemini_api_key_version" {
-  secret      = google_secret_manager_secret.gemini_api_key.id
-  secret_data = var.gemini_api_key
+  secret         = google_secret_manager_secret.gemini_api_key.id
+  secret_data_wo = var.gemini_api_key
   
   depends_on = [google_secret_manager_secret.gemini_api_key]
 }
