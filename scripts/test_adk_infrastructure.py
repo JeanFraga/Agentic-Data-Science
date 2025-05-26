@@ -30,7 +30,7 @@ def test_direct_gemini_api(api_key: str) -> bool:
         print(f"❌ Direct API test failed: {e}")
         return False
 
-def test_secret_manager_access(project_id: str = "agentic-data-science-460701") -> Optional[str]:
+def test_secret_manager_access(project_id: str = "{project-id}") -> Optional[str]:
     """Test access to Gemini API key from Secret Manager."""
     try:
         from google.cloud import secretmanager

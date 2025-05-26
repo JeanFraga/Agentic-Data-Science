@@ -29,7 +29,7 @@ function Show-Help {
     Write-Host "  .\setup-adk-terraform.ps1 [-ProjectId <PROJECT>] [-GeminiApiKey <API_KEY>] [OPTIONS]" -ForegroundColor White
     Write-Host ""
     Write-Host "PARAMETERS:" -ForegroundColor Yellow
-    Write-Host "  -ProjectId      GCP Project ID (default: agentic-data-science-460701)" -ForegroundColor White
+    Write-Host "  -ProjectId      GCP Project ID (default: {project-id})" -ForegroundColor White
     Write-Host "  -GeminiApiKey   Gemini API key from Google AI Studio (get free at: https://aistudio.google.com/app/apikey)" -ForegroundColor White
     Write-Host "  -Region         GCP region (default: us-east1)" -ForegroundColor White
     Write-Host "  -Environment    Environment name (default: dev)" -ForegroundColor White
@@ -64,7 +64,7 @@ if ($Help) {
 
 # Set defaults if not provided
 if (-not $ProjectId) {
-    $ProjectId = "agentic-data-science-460701"
+    $ProjectId = "{project-id}"
     Write-Host "Using default project: $ProjectId" -ForegroundColor Yellow
 }
 

@@ -23,7 +23,7 @@ def query_bigquery(query: str) -> Dict[str, Any]:
         Dictionary containing query results, columns, and metadata
     """
     try:
-        client = bigquery.Client(project='agentic-data-science-460701')
+        client = bigquery.Client(project='{project-id}')
         
         # Add project and dataset context if not specified
         if "FROM " in query.upper() and "." not in query.split("FROM")[1].split()[0]:
@@ -35,7 +35,7 @@ def query_bigquery(query: str) -> Dict[str, Any]:
                     if "." not in table_name:
                         parts[i + 1] = parts[i + 1].replace(
                             table_name, 
-                            f"`agentic-data-science-460701.test_dataset.{table_name}`"
+                            f"`{{project-id}}.test_dataset.{table_name}`"
                         )
                     break
             query = " ".join(parts)

@@ -48,7 +48,7 @@ Runtime: python311
 Memory: 256M
 Timeout: 300 seconds
 Trigger: GCS object finalized events
-Bucket: agentic-data-science-460701-temp-bucket
+Bucket: {project-id}-temp-bucket
 ```
 
 ### **Test Results:**

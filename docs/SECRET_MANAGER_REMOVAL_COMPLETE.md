@@ -81,7 +81,7 @@ The deployment was failing because:
 
 ```powershell
 # Test Terraform configuration locally
-cd "h:\My Drive\Github\Agentic Data Science\terraform"
+cd "path\to\your\agentic-data-science\terraform"
 terraform validate
 terraform plan
 

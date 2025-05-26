@@ -3,7 +3,7 @@
 ## Migration Status: ✅ **COMPLETED SUCCESSFULLY**
 
 **Date**: May 25, 2025  
-**Project**: agentic-data-science-460701  
+**Project**: {project-id}  
 **Function**: titanic-data-loader  
 
 ---

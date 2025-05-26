@@ -20,7 +20,7 @@ def test_bigquery_tool():
     
     # Test queries
     test_queries = [
-        "SELECT table_name FROM `agentic-data-science-460701.test_dataset.INFORMATION_SCHEMA.TABLES`",
+        "SELECT table_name FROM `{project-id}.test_dataset.INFORMATION_SCHEMA.TABLES`",
         "SELECT * FROM titanic LIMIT 5",
         "SELECT COUNT(*) as total_passengers FROM titanic",
         "SELECT Survived, COUNT(*) as count FROM titanic GROUP BY Survived"

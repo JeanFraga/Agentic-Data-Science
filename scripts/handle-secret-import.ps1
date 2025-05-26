@@ -8,8 +8,8 @@ param(
 
 Write-Host "Checking for existing Secret Manager resources..." -ForegroundColor Green
 
-# Change to terraform directory
-Set-Location "h:\My Drive\Github\Agentic Data Science\terraform"
+# Change to terraform directory (adjust path as needed)
+Set-Location ".\terraform"
 
 try {
     # Check if the secret exists

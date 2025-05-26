@@ -12,7 +12,7 @@
 
 ### **Clean Directory Layout**
 ```
-h:\My Drive\Github\Agentic Data Science\
+path\to\your\agentic-data-science\
 ├── 📄 README.md                       ← Project overview
 ├── 📄 GITHUB_SECRETS_SETUP.md         ← Setup guide
 ├── 🔑 github-actions-key.json         ← Service account key

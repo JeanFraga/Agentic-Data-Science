@@ -12,7 +12,7 @@ param(
 )
 
 # Configuration
-$TerraformDir = "h:\My Drive\Github\Agentic Data Science\terraform"
+$TerraformDir = ".\terraform"
 $LocalPlanDir = "$TerraformDir\plans"
 
 # Read project ID from terraform.tfvars if not provided

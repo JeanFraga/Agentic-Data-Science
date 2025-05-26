@@ -19,7 +19,7 @@ This guide walks through deploying the Agent Development Kit (ADK) infrastructur
 gcloud auth list
 
 # Set your project
-gcloud config set project agentic-data-science-460701
+gcloud config set project {your-project-id}
 
 # Verify project is active
 gcloud config get-value project
@@ -33,16 +33,16 @@ Use the automated setup script for streamlined deployment:
 
 ```powershell
 # Navigate to the project directory
-cd "h:\My Drive\Github\Agentic Data Science"
+cd "path\to\your\agentic-data-science"
 
 # Run the setup script
-.\scripts\setup-adk-terraform.ps1 -ProjectId "agentic-data-science-460701" -GeminiApiKey "YOUR_GEMINI_API_KEY"
+.\scripts\setup-adk-terraform.ps1 -ProjectId "{your-project-id}" -GeminiApiKey "YOUR_GEMINI_API_KEY"
 
 # Optional: Plan-only mode to review changes first
-.\scripts\setup-adk-terraform.ps1 -ProjectId "agentic-data-science-460701" -GeminiApiKey "YOUR_GEMINI_API_KEY" -PlanOnly
+.\scripts\setup-adk-terraform.ps1 -ProjectId "{your-project-id}" -GeminiApiKey "YOUR_GEMINI_API_KEY" -PlanOnly
 
 # Optional: Generate service account keys for local development
-.\scripts\setup-adk-terraform.ps1 -ProjectId "agentic-data-science-460701" -GeminiApiKey "YOUR_GEMINI_API_KEY" -GenerateKeys
+.\scripts\setup-adk-terraform.ps1 -ProjectId "{your-project-id}" -GeminiApiKey "YOUR_GEMINI_API_KEY" -GenerateKeys
 ```
 
 ### Option 2: Manual Terraform Deployment
@@ -72,7 +72,7 @@ For automated CI/CD deployment:
    - Add these secrets:
      - `GEMINI_API_KEY`: Your Gemini API key from Google AI Studio
      - Ensure existing secrets are configured:
-       - `GCP_PROJECT_ID`: agentic-data-science-460701
+       - `GCP_PROJECT_ID`: {your-project-id}
        - `GCP_REGION`: us-east1
        - `GCP_ENVIRONMENT`: dev
        - `GCP_SERVICE_ACCOUNT_KEY`: GitHub Actions service account key
@@ -87,15 +87,15 @@ For automated CI/CD deployment:
 ## What Gets Deployed
 
 ### 🔐 Service Accounts
-- **ADK Agent Service Account** (`adk-agent-sa@project.iam.gserviceaccount.com`)
+- **ADK Agent Service Account** (`adk-agent-sa@{project-id}.iam.gserviceaccount.com`)
   - For agent execution and orchestration
   - Permissions: BigQuery viewer, Storage viewer, AI Platform user, logging
 
-- **BigQuery ML Agent Service Account** (`bqml-agent-sa@project.iam.gserviceaccount.com`)
+- **BigQuery ML Agent Service Account** (`bqml-agent-sa@{project-id}.iam.gserviceaccount.com`)
   - For ML operations and AutoML model creation
   - Permissions: BigQuery admin, AI Platform user, data owner
 
-- **Vertex AI Agent Service Account** (`vertex-agent-sa@project.iam.gserviceaccount.com`)
+- **Vertex AI Agent Service Account** (`vertex-agent-sa@{project-id}.iam.gserviceaccount.com`)
   - For Vertex AI operations and Agent Engine integration
   - Permissions: AI Platform admin, BigQuery viewer
 
@@ -126,13 +126,13 @@ terraform output vertex_agent_service_account_email
 ### 2. Verify Infrastructure
 ```bash
 # Check BigQuery dataset
-bq ls --datasets --project_id=agentic-data-science-460701
+bq ls --datasets --project_id={your-project-id}
 
 # Verify Secret Manager
 gcloud secrets list --filter="name:gemini-api-key"
 
 # Check storage bucket
-gsutil ls gs://agentic-data-science-460701-adk-artifacts
+gsutil ls gs://{your-project-id}-adk-artifacts
 ```
 
 ### 3. Test Gemini API Access
@@ -144,9 +144,8 @@ from google.cloud import secretmanager
 def test_gemini_access():
     """Test access to Gemini API key from Secret Manager."""
     client = secretmanager.SecretManagerServiceClient()
-    
-    # Access the secret
-    project_id = "agentic-data-science-460701"
+      # Access the secret
+    project_id = "{your-project-id}"
     secret_name = "gemini-api-key"
     name = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
     
@@ -182,7 +181,7 @@ With infrastructure deployed, you can now proceed to **Phase 3: ADK Agent Develo
    - Ensure your account has project owner/editor permissions
 
 3. **Terraform backend errors**:
-   - Run: `terraform init -backend-config="bucket=agentic-data-science-460701-terraform-state"`
+   - Run: `terraform init -backend-config="bucket={your-project-id}-terraform-state"`
 
 4. **Secret Manager access issues**:
    - Verify the Secret Manager API is enabled

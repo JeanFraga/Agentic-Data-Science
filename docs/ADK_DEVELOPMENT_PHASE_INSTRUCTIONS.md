@@ -800,7 +800,7 @@ python run_adk_web.py
 #### Quick Start Commands
 ```powershell
 # Navigate to project directory
-cd "h:\My Drive\Github\Agentic Data Science\adk_titanic_agent"
+cd "path\to\your\agentic-data-science\adk_titanic_agent"
 
 # Set up environment (first time only)
 .\setup_adk_environment.ps1

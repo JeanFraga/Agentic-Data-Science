@@ -68,14 +68,14 @@ resource "google_sourcerepo_repository" "github_mirror" {
 Run the setup script to prepare GitHub integration:
 
 ```powershell
-.\scripts\setup-github-deployment.ps1 -ProjectId "agentic-data-science-460701"
+.\scripts\setup-github-deployment.ps1 -ProjectId "{your-project-id}"
 ```
 
 ### **2. Deploy Infrastructure**
 
 ```powershell
 cd terraform
-terraform init -backend-config="bucket=agentic-data-science-460701-terraform-state"
+terraform init -backend-config="bucket={your-project-id}-terraform-state"
 terraform plan
 terraform apply
 ```
@@ -121,12 +121,12 @@ Once connected, your Cloud Function will automatically redeploy when you:
 
 ### **Check Repository Creation:**
 ```powershell
-gcloud source repos list --project=agentic-data-science-460701
+gcloud source repos list --project={your-project-id}
 ```
 
 ### **Verify Function Configuration:**
 ```powershell
-gcloud functions describe titanic-data-loader --region=us-east1 --gen2 --project=agentic-data-science-460701
+gcloud functions describe titanic-data-loader --region=us-east1 --gen2 --project={your-project-id}
 ```
 
 ### **Test Deployment:**

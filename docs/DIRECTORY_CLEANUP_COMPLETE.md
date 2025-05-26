@@ -3,7 +3,7 @@
 ## ✅ **Successfully Implemented Clean Structure**
 
 ```
-h:\My Drive\Github\Agentic Data Science\
+path\to\your\agentic-data-science\
 ├── 📂 docs/                           ← ✅ Created: All implementation docs
 │   ├── 📋 INDEX.md                    ← ✅ Navigation guide
 │   ├── 🎯 DEPLOYMENT_SUCCESS.md       ← ✅ Moved

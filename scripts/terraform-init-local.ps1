@@ -3,7 +3,7 @@
 
 # Initialize Terraform with backend configuration
 Write-Host "🔧 Initializing Terraform with remote state backend..." -ForegroundColor Yellow
-terraform init -backend-config="bucket=agentic-data-science-460701-terraform-state"
+terraform init -backend-config="bucket={project-id}-terraform-state"
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "✅ Terraform initialized successfully!" -ForegroundColor Green
