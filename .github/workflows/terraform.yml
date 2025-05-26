@@ -1,4 +1,4 @@
-name: 'Terraform CI/CD with IAM as Code'
+name: 'Terraform CI/CD with ADK Infrastructure'
 
 on:
   push:
@@ -14,6 +14,10 @@ jobs:
       TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
       TF_VAR_region: ${{ secrets.GCP_REGION }}
       TF_VAR_environment: ${{ secrets.GCP_ENVIRONMENT }}
+      TF_VAR_gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+      TF_VAR_github_owner: ${{ github.repository_owner }}
+      TF_VAR_github_repo_name: ${{ github.event.repository.name }}
+      TF_VAR_deployment_branch: ${{ github.ref_name }}
 
     steps:
       - name: 'Checkout'
@@ -59,8 +63,19 @@ jobs:
       - name: 'Output Service Account Information'
         id: output_sa
         run: |
+          echo "=== Core Service Accounts ==="
           echo "GitHub Actions Service Account: $(terraform output -raw github_actions_service_account_email)"
           echo "Cloud Function Service Account: $(terraform output -raw cloud_function_service_account_email)"
+          echo ""
+          echo "=== ADK Service Accounts ==="
+          echo "ADK Agent Service Account: $(terraform output -raw adk_agent_service_account_email)"
+          echo "BigQuery ML Agent Service Account: $(terraform output -raw bqml_agent_service_account_email)"
+          echo "Vertex AI Agent Service Account: $(terraform output -raw vertex_agent_service_account_email)"
+          echo ""
+          echo "=== ADK Infrastructure ==="
+          echo "Titanic Dataset: $(terraform output -raw titanic_dataset_id)"
+          echo "ADK Artifacts Bucket: $(terraform output -raw adk_artifacts_bucket)"
+          echo "Gemini API Secret: $(terraform output -raw gemini_api_key_secret_name)"
         working-directory: ./terraform
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 

@@ -36,3 +36,21 @@ variable "deployment_branch" {
   type        = string
   default     = "main"
 }
+
+variable "gemini_api_key" {
+  description = "API key for Google Gemini AI services"
+  type        = string
+  sensitive   = true
+}
+
+variable "dataset_id" {
+  description = "BigQuery dataset ID for the Titanic dataset"
+  type        = string
+  default     = "titanic_dataset"
+}
+
+variable "bq_location" {
+  description = "BigQuery dataset location"
+  type        = string
+  default     = "US"
+}

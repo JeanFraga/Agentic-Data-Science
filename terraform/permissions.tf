@@ -1,5 +1,5 @@
 # Complete IAM configuration as code for Agentic Data Science project
-# This file manages all service accounts and IAM permissions
+# This file manages all service accounts and IAM permissions including ADK agents
 
 # Service Account for GitHub Actions (Terraform deployments)
 resource "google_service_account" "github_actions" {
@@ -68,9 +68,125 @@ resource "google_project_iam_member" "cloud_function_roles" {
   project = var.project_id
   role    = each.value
   member  = "serviceAccount:${google_service_account.cloud_function.email}"
-  
-  depends_on = [google_service_account.cloud_function]
+    depends_on = [google_service_account.cloud_function]
 }
+
+# ==============================================================================
+# ADK (Agent Development Kit) Service Accounts and IAM Roles
+# ==============================================================================
+
+# Service Account for ADK Agent Execution
+resource "google_service_account" "adk_agent" {
+  account_id   = "adk-agent-sa"
+  display_name = "ADK Agent Service Account"
+  description  = "Service account for ADK agent execution and orchestration"
+  project      = var.project_id
+  
+  depends_on = [google_project_service.required_apis]
+}
+
+# Service Account for BigQuery ML Operations
+resource "google_service_account" "bqml_agent" {
+  account_id   = "bqml-agent-sa"
+  display_name = "BigQuery ML Agent Service Account"
+  description  = "Service account for BigQuery ML operations and AutoML model creation"
+  project      = var.project_id
+  
+  depends_on = [google_project_service.required_apis]
+}
+
+# Service Account for Vertex AI Operations
+resource "google_service_account" "vertex_agent" {
+  account_id   = "vertex-agent-sa"
+  display_name = "Vertex AI Agent Service Account"
+  description  = "Service account for Vertex AI operations and Agent Engine integration"
+  project      = var.project_id
+  
+  depends_on = [google_project_service.required_apis]
+}
+
+# IAM roles for ADK Agent service account
+resource "google_project_iam_member" "adk_agent_roles" {
+  for_each = toset([
+    "roles/bigquery.user",
+    "roles/bigquery.dataViewer",
+    "roles/aiplatform.user",
+    "roles/storage.objectViewer",
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter"
+  ])
+  
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.adk_agent.email}"
+  
+  depends_on = [google_service_account.adk_agent]
+}
+
+# IAM roles for BigQuery ML Agent service account
+resource "google_project_iam_member" "bqml_agent_roles" {
+  for_each = toset([
+    "roles/bigquery.admin",
+    "roles/bigquery.dataOwner",
+    "roles/bigquery.jobUser",
+    "roles/aiplatform.user",
+    "roles/storage.objectViewer",
+    "roles/logging.logWriter"
+  ])
+  
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.bqml_agent.email}"
+  
+  depends_on = [google_service_account.bqml_agent]
+}
+
+# IAM roles for Vertex AI Agent service account
+resource "google_project_iam_member" "vertex_agent_roles" {
+  for_each = toset([
+    "roles/aiplatform.admin",
+    "roles/aiplatform.user",
+    "roles/bigquery.user",
+    "roles/bigquery.dataViewer",
+    "roles/storage.objectViewer",
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter"
+  ])
+  
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.vertex_agent.email}"
+  
+  depends_on = [google_service_account.vertex_agent]
+}
+
+# Service account impersonation permissions for ADK orchestration
+# Allow ADK agent to impersonate other agents for specific operations
+resource "google_service_account_iam_member" "adk_agent_impersonate_bqml" {
+  service_account_id = google_service_account.bqml_agent.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:${google_service_account.adk_agent.email}"
+  
+  depends_on = [
+    google_service_account.adk_agent,
+    google_service_account.bqml_agent
+  ]
+}
+
+resource "google_service_account_iam_member" "adk_agent_impersonate_vertex" {
+  service_account_id = google_service_account.vertex_agent.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:${google_service_account.adk_agent.email}"
+  
+  depends_on = [
+    google_service_account.adk_agent,
+    google_service_account.vertex_agent
+  ]
+}
+
+# ==============================================================================
+# End ADK Service Accounts Configuration
+# ==============================================================================
 
 # Data source to get current project information
 data "google_project" "current" {
@@ -100,6 +216,22 @@ output "github_actions_service_account_email" {
 output "cloud_function_service_account_email" {
   description = "Email of the Cloud Function service account"
   value       = google_service_account.cloud_function.email
+}
+
+# ADK Service Account Outputs
+output "adk_agent_service_account_email" {
+  description = "Email of the ADK Agent service account"
+  value       = google_service_account.adk_agent.email
+}
+
+output "bqml_agent_service_account_email" {
+  description = "Email of the BigQuery ML Agent service account"
+  value       = google_service_account.bqml_agent.email
+}
+
+output "vertex_agent_service_account_email" {
+  description = "Email of the Vertex AI Agent service account"
+  value       = google_service_account.vertex_agent.email
 }
 
 output "terraform_state_bucket" {

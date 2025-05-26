@@ -1,12 +1,31 @@
-# Terraform variable values
-# Copy this file and update with your actual values
+# Terraform variable values for ADK Agentic Data Science Project
+# Copy this file to terraform.tfvars and update with your actual values
 
 # GCP Project Configuration
 project_id = "your-gcp-project-id-here"
 region     = "us-central1"
 environment = "dev"
 
+# GitHub Configuration
+github_owner = "your-github-username"
+github_repo_name = "agentic-data-science"
+deployment_branch = "main"
+
+# BigQuery Configuration
+dataset_id = "titanic_dataset"
+bq_location = "US"
+
+# Gemini API Configuration
+# Get your API key from: https://aistudio.google.com/app/apikey
+gemini_api_key = "your-gemini-api-key-here"
+
 # Example values:
 # project_id = "agentic-data-science-12345"
-# region     = "us-central1"
+# region = "us-central1"
 # environment = "dev"
+# github_owner = "JeanFraga"
+# github_repo_name = "agentic-data-science"
+# deployment_branch = "main"
+# dataset_id = "titanic_dataset"
+# bq_location = "US"
+# gemini_api_key = "AIzaSyC..."
