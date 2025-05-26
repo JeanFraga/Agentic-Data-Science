@@ -17,6 +17,7 @@ Implement an end-to-end agentic data science solution using Google's Agent Devel
 - Create a conversational interface for data analysis and ML model creation
 - Use github actions for CI/CD and deployment
 - Test locally using the Titanic dataset in bigquery and adk web
+- .gitignore file to protect sensitive data and credentials
 
 ### Target Dataset
 - **Primary Dataset**: Titanic dataset (ideal for ML model development and testing)
