@@ -48,6 +48,26 @@ jobs:
         run: terraform validate -no-color
         working-directory: ./terraform
 
+      - name: 'Handle Existing Secret Manager Resources'
+        id: import_secrets
+        run: |
+          # Check if the secret exists and try to import it if needed
+          if gcloud secrets describe gemini-api-key --project=${{ secrets.GCP_PROJECT_ID }} >/dev/null 2>&1; then
+            echo "Secret gemini-api-key already exists, attempting to import..."
+            terraform import google_secret_manager_secret.gemini_api_key projects/${{ secrets.GCP_PROJECT_ID }}/secrets/gemini-api-key || echo "Import failed or resource already in state"
+            
+            # Try to import the secret version if it exists
+            VERSION_ID=$(gcloud secrets versions list gemini-api-key --project=${{ secrets.GCP_PROJECT_ID }} --limit=1 --format="value(name)" 2>/dev/null || echo "")
+            if [ ! -z "$VERSION_ID" ]; then
+              echo "Attempting to import secret version..."
+              terraform import google_secret_manager_secret_version.gemini_api_key_version projects/${{ secrets.GCP_PROJECT_ID }}/secrets/gemini-api-key/versions/$VERSION_ID || echo "Version import failed or already in state"
+            fi
+          else
+            echo "Secret gemini-api-key does not exist, will be created by Terraform"
+          fi
+        working-directory: ./terraform
+        continue-on-error: true
+
       - name: 'Terraform Plan'
         id: plan
         run: terraform plan -no-color -input=false -out=tfplan

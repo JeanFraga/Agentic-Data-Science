@@ -193,7 +193,10 @@ resource "google_secret_manager_secret" "gemini_api_key" {
     auto {}
   }
   
-  depends_on = [google_project_service.required_apis]
+  depends_on = [
+    google_project_service.required_apis,
+    google_project_iam_member.github_actions_roles
+  ]
 }
 
 # Secret version for Gemini API key
