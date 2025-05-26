@@ -43,12 +43,6 @@ variable "gemini_api_key" {
   sensitive   = true
 }
 
-variable "dataset_id" {
-  description = "BigQuery dataset ID for the Titanic dataset"
-  type        = string
-  default     = "titanic_dataset"
-}
-
 variable "bq_location" {
   description = "BigQuery dataset location"
   type        = string

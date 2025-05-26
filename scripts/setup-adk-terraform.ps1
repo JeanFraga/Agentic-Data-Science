@@ -162,7 +162,7 @@ github_repo_name = "agentic-data-science"
 deployment_branch = "main"
 
 # BigQuery Configuration
-dataset_id = "titanic_dataset"
+dataset_id = "test_dataset"
 bq_location = "US"
 "@
     

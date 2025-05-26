@@ -71,9 +71,8 @@ jobs:
           echo "ADK Agent Service Account: $(terraform output -raw adk_agent_service_account_email)"
           echo "BigQuery ML Agent Service Account: $(terraform output -raw bqml_agent_service_account_email)"
           echo "Vertex AI Agent Service Account: $(terraform output -raw vertex_agent_service_account_email)"
-          echo ""
-          echo "=== ADK Infrastructure ==="
-          echo "Titanic Dataset: $(terraform output -raw titanic_dataset_id)"
+          echo ""          echo "=== ADK Infrastructure ==="
+          echo "Test Dataset: $(terraform output -raw titanic_dataset_id)"
           echo "ADK Artifacts Bucket: $(terraform output -raw adk_artifacts_bucket)"
         working-directory: ./terraform
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'

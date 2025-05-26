@@ -100,7 +100,7 @@ For automated CI/CD deployment:
   - Permissions: AI Platform admin, BigQuery viewer
 
 ### 📊 Infrastructure Resources
-- **BigQuery Dataset**: `titanic_dataset` for ML training data
+- **BigQuery Dataset**: `test_dataset` for ML training data and Titanic analysis
 - **Secret Manager**: Secure storage for Gemini API key
 - **Storage Bucket**: `adk-artifacts` for agent packages and artifacts
 - **APIs Enabled**: AI Platform, Compute Engine, Secret Manager

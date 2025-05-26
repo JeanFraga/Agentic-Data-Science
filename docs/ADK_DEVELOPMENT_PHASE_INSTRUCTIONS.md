@@ -50,7 +50,7 @@ gcloud services enable compute.googleapis.com
 export PROJECT_ID=$(gcloud config get-value project)
 export PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
 export REGION="us-central1"  # ADK-supported region
-export DATASET_ID="titanic_dataset"
+export DATASET_ID="test_dataset"
 export BQ_LOCATION="US"
 ```
 
@@ -176,7 +176,7 @@ bq show $PROJECT_ID:$DATASET_ID
 
 #### Dataset Configuration Details
 The Terraform configuration (`terraform/main.tf`) creates:
-- **Dataset ID**: `titanic_dataset` (configurable via `var.dataset_id`)
+- **Dataset ID**: `test_dataset` (configurable via `var.dataset_id`)
 - **Location**: `US` (configurable via `var.bq_location`)
 - **Access Control**: 
   - OWNER: Current user and BigQuery ML Agent
@@ -712,13 +712,12 @@ def get_adk_config():
     return {
         "agent": orchestrator_agent,
         "port": 8080,
-        "host": "localhost",
-        "debug": True,
+        "host": "localhost",        "debug": True,
         "title": "Titanic Data Science Agent",
         "description": "AI-powered data science agent for Titanic survival prediction",
         "environment": {
             "PROJECT_ID": os.environ.get('PROJECT_ID'),
-            "DATASET_ID": os.environ.get('DATASET_ID', 'titanic_dataset'),
+            "DATASET_ID": os.environ.get('DATASET_ID', 'test_dataset'),
             "REGION": os.environ.get('REGION', 'us-central1'),
         }
     }
@@ -749,10 +748,9 @@ def main():
     if missing_vars:
         logger.error(f"Missing required environment variables: {missing_vars}")
         return
-    
-    logger.info("Starting ADK web interface...")
+      logger.info("Starting ADK web interface...")
     logger.info(f"Project: {os.environ['PROJECT_ID']}")
-    logger.info(f"Dataset: {os.environ.get('DATASET_ID', 'titanic_dataset')}")
+    logger.info(f"Dataset: {os.environ.get('DATASET_ID', 'test_dataset')}")
     logger.info(f"Region: {os.environ.get('REGION', 'us-central1')}")
     
     # Get configuration
@@ -781,7 +779,7 @@ if __name__ == "__main__":
 
 # Set environment variables for local development
 $env:PROJECT_ID = "your-project-id"
-$env:DATASET_ID = "titanic_dataset"
+$env:DATASET_ID = "test_dataset"
 $env:REGION = "us-central1"
 $env:GOOGLE_APPLICATION_CREDENTIALS = "path\to\service-account-key.json"
 
@@ -879,7 +877,7 @@ echo "Starting end-to-end testing..."
 
 # Set environment variables
 export PROJECT_ID=$(gcloud config get-value project)
-export DATASET_ID="titanic_dataset"
+export DATASET_ID="test_dataset"
 export REGION="us-central1"
 
 # Test 1: Data availability
@@ -929,9 +927,8 @@ resource "google_vertex_ai_reasoning_engine" "titanic_agent" {
       }
     }
   }
-
   depends_on = [
-    google_bigquery_dataset.titanic_dataset,
+    google_bigquery_dataset.test_dataset,
     google_storage_bucket.agent_packages
   ]
 }
@@ -941,10 +938,10 @@ resource "google_storage_bucket" "agent_packages" {
   location = var.region
 }
 
-resource "google_bigquery_dataset" "titanic_dataset" {
-  dataset_id  = "titanic_dataset"
+resource "google_bigquery_dataset" "test_dataset" {
+  dataset_id  = "test_dataset"
   location    = "US"
-  description = "Titanic dataset for survival prediction analysis"
+  description = "Test dataset for Titanic survival prediction analysis"
 }
 ```
 

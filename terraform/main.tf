@@ -96,12 +96,16 @@ resource "google_storage_bucket" "terraform_plans" {
 
 resource "google_bigquery_dataset" "test_dataset" {
   dataset_id = "test_dataset"
-  friendly_name = "test_dataset"
+  friendly_name = "Test Dataset for Titanic ML Analysis"
   location   = var.region
-  description = "Dataset for ${var.project_id}"
+  description = "Primary dataset for ${var.project_id} - Contains Titanic data for ML training and ADK agent analysis"
+  
   labels = {
     environment = var.environment
     project     = var.project_id
+    dataset_type = "ml_training"
+    agent_project = "titanic_survival"
+    purpose = "adk_data_science"
   }
   
   depends_on = [google_project_service.required_apis]
@@ -123,58 +127,36 @@ resource "google_storage_bucket" "temp_bucket" {
 # ADK (Agent Development Kit) Infrastructure
 # ==============================================================================
 
-# BigQuery dataset for Titanic data
-resource "google_bigquery_dataset" "titanic_dataset" {
-  dataset_id                  = var.dataset_id
-  friendly_name              = "Titanic Dataset"
-  location                   = var.bq_location
-  description                = "Dataset for Titanic survival prediction analysis using ADK agents"
-  default_table_expiration_ms = null
-  
-  labels = {
-    environment = var.environment
-    project     = var.project_id
-    dataset_type = "ml_training"
-    agent_project = "titanic_survival"
-  }
-  
-  access {
-    role          = "OWNER"
-    user_by_email = data.google_client_openid_userinfo.me.email
-  }
-  
-  access {
-    role         = "READER"
-    special_group = "projectReaders"
-  }
-  
-  access {
-    role         = "WRITER"
-    special_group = "projectWriters"
-  }
-  
-  # Grant BigQuery ML Agent admin access
-  access {
-    role          = "OWNER"
-    user_by_email = google_service_account.bqml_agent.email
-  }
-  
-  # Grant ADK Agent read access
-  access {
-    role          = "READER"
-    user_by_email = google_service_account.adk_agent.email
-  }
-  
-  # Grant Vertex AI Agent read access
-  access {
-    role          = "READER" 
-    user_by_email = google_service_account.vertex_agent.email
-  }
+# Update test_dataset with ADK-specific access permissions and labels
+resource "google_bigquery_dataset_access" "adk_agent_access" {
+  dataset_id = google_bigquery_dataset.test_dataset.dataset_id
+  role       = "READER"
+  user_by_email = google_service_account.adk_agent.email
   
   depends_on = [
-    google_project_service.required_apis,
-    google_service_account.adk_agent,
-    google_service_account.bqml_agent,
+    google_bigquery_dataset.test_dataset,
+    google_service_account.adk_agent
+  ]
+}
+
+resource "google_bigquery_dataset_access" "bqml_agent_access" {
+  dataset_id = google_bigquery_dataset.test_dataset.dataset_id
+  role       = "OWNER"
+  user_by_email = google_service_account.bqml_agent.email
+  
+  depends_on = [
+    google_bigquery_dataset.test_dataset,
+    google_service_account.bqml_agent
+  ]
+}
+
+resource "google_bigquery_dataset_access" "vertex_agent_access" {
+  dataset_id = google_bigquery_dataset.test_dataset.dataset_id
+  role       = "READER"
+  user_by_email = google_service_account.vertex_agent.email
+  
+  depends_on = [
+    google_bigquery_dataset.test_dataset,
     google_service_account.vertex_agent
   ]
 }
@@ -228,13 +210,13 @@ data "google_client_openid_userinfo" "me" {
 # ==============================================================================
 
 output "titanic_dataset_id" {
-  description = "BigQuery dataset ID for Titanic data"
-  value       = google_bigquery_dataset.titanic_dataset.dataset_id
+  description = "BigQuery dataset ID for Titanic data (using test_dataset)"
+  value       = google_bigquery_dataset.test_dataset.dataset_id
 }
 
 output "titanic_dataset_location" {
   description = "BigQuery dataset location"
-  value       = google_bigquery_dataset.titanic_dataset.location
+  value       = google_bigquery_dataset.test_dataset.location
 }
 
 output "adk_artifacts_bucket" {
