@@ -268,7 +268,7 @@ if ($TestMode -eq 'full') {
         
         $perfEndTime = Get-Date
         $processingTime = ($perfEndTime - $perfStartTime).TotalSeconds
-        Write-Info "Processing time for run $i: $processingTime seconds"
+        Write-Info "Processing time for run ${i}: $processingTime seconds"
     }
 }
 

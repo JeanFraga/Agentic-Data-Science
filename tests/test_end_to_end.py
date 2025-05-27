@@ -5,17 +5,22 @@ Tests the complete agent functionality including tools and code execution
 """
 
 import asyncio
-from agent import root_agent, query_bigquery
+import sys
+import os
+# Add the titanic-agent directory to the Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'titanic-agent'))
+
+from titanic_agent.agent import root_agent
+from titanic_agent.sub_agents.bigquery.agent import execute_query
 
 def test_agent_tools():
     """Test the agent's tools directly"""
     
     print("🔧 Testing Agent Tools")
     print("=" * 50)
-    
-    # Test BigQuery tool
+      # Test BigQuery tool
     print("\n📊 Testing BigQuery Tool:")
-    result = query_bigquery("SELECT COUNT(*) as total FROM titanic")
+    result = execute_query("SELECT COUNT(*) as total FROM titanic")
     if result["success"]:
         print(f"✅ BigQuery tool working: {result['data'][0]['total']} passengers")
     else:

@@ -31,7 +31,7 @@ Implement an end-to-end agentic data science solution using Google's Agent Devel
 #### Agent Development Kit Setup
 - Reference: https://google.github.io/adk-docs/
 - Follow quickstart guide for initial setup
-- Implement local testing using `adk web` command
+- Implement local testing using `cd ".\Agentic Data Science\titanic-agent"; python -m google.adk.cli web --port 8000` command
 
 #### Infrastructure Components
 - **BigQuery**: Data storage and AutoML model training
